@@ -150,9 +150,9 @@ class HopfieldNetwork:
         as the network iterates.
         
         Returns:
-            history: A list of states (numpy arrays) for each update iteration.
-                     history[iteration] is the state after completing
-                     the asynchronous update in that iteration.
+            history: List of states (numpy arrays). ``history[0]`` is the
+                initial state and ``history[i]`` (``i > 0``) is the state after
+                completing iteration ``i`` of asynchronous updates.
         """
         
         state = pattern.copy()    # Input state
@@ -171,9 +171,12 @@ class HopfieldNetwork:
                 new_state = sign(xi)
                 if new_state != state[i]:
                     changed = True
-                    state[i] =  new_state
-                    # Append new state to the history
-                    history.append(state.copy())
+                    state[i] = new_state
+
+            # Append state after finishing asynchronous updates for this
+            # iteration. This keeps ``history`` aligned with the number of
+            # completed update cycles.
+            history.append(state.copy())
 
             # If no value changes, finish the training process
             if not changed:
